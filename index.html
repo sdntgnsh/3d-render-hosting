@@ -5,30 +5,51 @@
     <title>CheerpJ Test</title>
     <script src="https://cjrtnc.leaningtech.com/3.1/cj3loader.js"></script>
     <style>
-      /* Make sure the page occupies the full window */
-      html,
-      body {
+      html, body {
         margin: 0;
         padding: 0;
         height: 100%;
         width: 100%;
         overflow: hidden;
       }
+      #loading {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        font-family: Arial, sans-serif;
+      }
     </style>
   </head>
   <body>
+    <div id="loading">Loading Java application... Please wait.</div>
+    
     <script>
       (async function () {
         await cheerpjInit();
+        
         // Use the full width and height of the browser window
         cheerpjCreateDisplay(window.innerWidth, window.innerHeight);
-        // await cheerpjRunJar("/app/src/Application.jar", "GUI");
-        await cheerpjRunMain("GUI", "/application.jar");
+        
+        // Hide loading message
+        document.getElementById("loading").style.display = "none";
+        
+        try {
+          // Try running the JAR directly first (relying on manifest)
+          await cheerpjRunJar("/application.jar");
+        } catch (e) {
+          console.log("First attempt failed, trying alternative method:", e);
+          try {
+            // Try explicitly specifying the main class
+            await cheerpjRunMain("GUI", "/application.jar");
+          } catch (e2) {
+            console.error("Both attempts failed:", e2);
+            document.body.innerHTML = "<div style='color:red; padding:20px;'>Error loading Java application. Please check console for details.</div>";
+          }
+        }
       })();
-
-      // Optionally, update the display size when the window is resized.
+      
       window.addEventListener("resize", function () {
-        // If CheerpJ uses a specific display element, update its dimensions.
         var display = document.getElementById("cheerpjDisplay");
         if (display) {
           display.style.width = window.innerWidth + "px";
