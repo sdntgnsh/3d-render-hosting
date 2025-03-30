@@ -36,7 +36,7 @@
         
         try {
           // Try running the JAR directly first (relying on manifest)
-          await cheerpjRunJar("/app/application.jar", ["GUI"]);
+          await cheerpjRunJar("/app/application.jar");
         } catch (e) {
           console.log("First attempt failed, trying alternative method:", e);
           try {
